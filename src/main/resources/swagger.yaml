@@ -1,0 +1,47 @@
+openapi: "3.0.3"
+
+info:
+  title: Serasa API
+  description: Management to create new users
+  version: "2.0.0"
+  contact:
+    name: Cobrador
+
+servers:
+  - url: http://localhost:8080
+    description: Desenvolvimento local
+
+paths:
+
+  /v1/api/register:
+    post:
+      summary: Register new user
+      operationId: register
+      tags: [ PersonApi ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterPersonRequest"
+      responses:
+        "201":
+          description: Person created
+
+components:
+  schemas:
+    RegisterPersonRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        zipCode:
+          type: string
+        score:
+          type: integer
+
+
+
