@@ -22,7 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "serasa", name = "tb_person")
+@Table(name = "tb_person")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,10 +31,12 @@ import java.util.UUID;
 public class PersonEntity {
 
     @Id
-    @Column(name = "id", columnDefinition = "UUID")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "active", nullable = false)
+    @Builder.Default
+    private boolean active = true;
     @Column(name = "name", nullable = false)
     private String name;
 
