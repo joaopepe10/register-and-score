@@ -1,37 +1,175 @@
-openapi: "3.0.3"
+openapi: 3.0.3
 
 info:
-  title: Serasa API
-  description: Management to create new users
-  version: "2.0.0"
-  contact:
-    name: Cobrador
+  title: Serasa Experian API
+  description: API para cadastro e gerenciamento de pessoas com score
+  version: 1.0.0
 
 servers:
   - url: http://localhost:8080
-    description: Desenvolvimento local
+    description: Ambiente local
+
+tags:
+  - name: Auth
+  - name: Person
 
 paths:
 
-  /v1/api/register:
+  /v1/api/auth/login:
     post:
-      summary: Register new user
-      operationId: register
-      tags: [ PersonApi ]
+      tags: [Auth]
+      summary: Autenticar usuário e gerar JWT
+      operationId: login
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterPersonRequest"
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        "200":
+          description: Token JWT gerado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /v1/api/person:
+    post:
+      tags: [Person]
+      summary: Criar nova pessoa (ADMIN)
+      operationId: createPerson
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePersonRequest'
       responses:
         "201":
-          description: Person created
+          description: Pessoa criada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+
+    get:
+      tags: [Person]
+      summary: Listar pessoas com paginação e filtros
+      operationId: listPersons
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: minAge
+          in: query
+          schema:
+            type: integer
+        - name: maxAge
+          in: query
+          schema:
+            type: integer
+        - name: zipCode
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Lista paginada de pessoas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagePersonResponse'
+
+  /v1/api/person/{id}:
+    put:
+      tags: [Person]
+      summary: Atualizar pessoa (ADMIN)
+      operationId: updatePerson
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonRequest'
+      responses:
+        "200":
+          description: Pessoa atualizada
+
+    delete:
+      tags: [Person]
+      summary: Remover pessoa logicamente (ADMIN)
+      operationId: deletePerson
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Pessoa removida logicamente
 
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
-    RegisterPersonRequest:
+
+    LoginRequest:
       type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    CreatePersonRequest:
+      type: object
+      required:
+        - name
+        - birthDate
+        - zipCode
+        - phoneNumber
+        - score
       properties:
         name:
           type: string
@@ -40,8 +178,74 @@ components:
           format: date
         zipCode:
           type: string
+        phoneNumber:
+          type: string
         score:
           type: integer
+          minimum: 0
+          maximum: 1000
 
+    UpdatePersonRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        phoneNumber:
+          type: string
+        score:
+          type: integer
+          minimum: 0
+          maximum: 1000
 
+    PersonResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        age:
+          type: integer
+        phoneNumber:
+          type: string
+        score:
+          type: integer
+        scoreDescription:
+          type: string
+          example: "Alto"
+        address:
+          $ref: '#/components/schemas/AddressResponse'
 
+    AddressResponse:
+      type: object
+      properties:
+        zipCode:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        neighborhood:
+          type: string
+        publicPlace:
+          type: string
+
+    PagePersonResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/PersonResponse'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
