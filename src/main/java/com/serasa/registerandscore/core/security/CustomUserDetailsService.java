@@ -1,6 +1,6 @@
 package com.serasa.registerandscore.core.security;
 
-import com.serasa.registerandscore.infra.persistence.sql.UserRepository;
+import com.serasa.registerandscore.infra.persistence.sql.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
