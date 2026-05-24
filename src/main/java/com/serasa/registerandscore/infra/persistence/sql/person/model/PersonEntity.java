@@ -50,10 +50,6 @@ public class PersonEntity {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 30)
-    private UserRole role;
-
     @Embedded
     private Address address;
 

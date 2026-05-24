@@ -9,7 +9,6 @@ import com.serasa.registerandscore.infra.client.UserInformationProvider;
 import com.serasa.registerandscore.infra.persistence.sql.person.PersonRepository;
 import com.serasa.registerandscore.infra.persistence.sql.person.model.Address;
 import com.serasa.registerandscore.infra.persistence.sql.person.model.PersonEntity;
-import com.serasa.registerandscore.infra.persistence.sql.person.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,18 +30,9 @@ public class PersonService {
 
     public PersonResponse createPerson(CreatePersonRequest request) {
         var address = getAddress(request);
-
-        var personEntity = PersonEntity.builder()
-                .name(request.getName())
-                .address(address)
-                .birthDate(request.getBirthDate())
-                .phoneNumber(request.getPhoneNumber())
-                .score(request.getScore())
-                .role(UserRole.USER)
-                .build();
-
-        personEntity = personRepository.save(personEntity);
-        return personMapper.toResponse(personEntity);
+        var entity = personMapper.toEntity(request, address);
+        entity = personRepository.save(entity);
+        return personMapper.toResponse(entity);
     }
 
     private Address getAddress(CreatePersonRequest request) {
@@ -50,32 +40,20 @@ public class PersonService {
         return personMapper.toAddress(address);
     }
 
-    public PagePersonResponse listPersons(String name, Integer minAge, Integer maxAge, String zipCode, Integer page, Integer size) {
+    public PagePersonResponse listPersons(String name, Integer age, String zipCode, Integer page, Integer size) {
         LocalDate minDate = null;
         LocalDate maxDate = null;
 
-        if (nonNull(minAge)) {
-            maxDate = LocalDate.now().minusYears(minAge);
-        }
-        if (nonNull(maxAge)) {
-            minDate = LocalDate.now().minusYears(maxAge + 1).plusDays(1);
+        if (nonNull(age)) {
+            maxDate = LocalDate.now().minusYears(age);
+            minDate = LocalDate.now().minusYears(age + 1).plusDays(1);
         }
 
         var searchName = isBlank(name) ? null : name;
         var searchZipCode = isBlank(zipCode) ? null : zipCode;
 
         var result = personRepository.findPersonsByFilters(searchName, searchZipCode, minDate, maxDate, PageRequest.of(page, size));
-        var content = result.getContent().stream().map(personMapper::toResponse).collect(Collectors.toList());
-        return PagePersonResponse.builder()
-                .content(content)
-                .page(result.getNumber())
-                .size(result.getSize())
-                .totalElements((int) result.getTotalElements())
-                .page(result.getNumber())
-                .size(result.getSize())
-                .totalElements((int) result.getTotalElements())
-                .totalPages(result.getTotalPages())
-                .build();
+        return personMapper.toPageResponse(result);
     }
 
     public void updatePerson(UUID id, UpdatePersonRequest request) {

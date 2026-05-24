@@ -81,11 +81,7 @@ paths:
           in: query
           schema:
             type: string
-        - name: minAge
-          in: query
-          schema:
-            type: integer
-        - name: maxAge
+        - name: age
           in: query
           schema:
             type: integer

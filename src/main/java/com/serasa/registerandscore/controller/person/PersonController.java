@@ -26,8 +26,8 @@ public class PersonController implements PersonApi {
     }
 
     @Override
-    public ResponseEntity<PagePersonResponse> listPersons(String name, Integer minAge, Integer maxAge, String zipCode, Integer page, Integer size) {
-        var response = personService.listPersons(name, minAge, maxAge, zipCode, page, size);
+    public ResponseEntity<PagePersonResponse> listPersons(String name, Integer age, String zipCode, Integer page, Integer size) {
+        var response = personService.listPersons(name, age, zipCode, page, size);
         return ResponseEntity.ok(response);
     }
 
