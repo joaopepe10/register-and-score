@@ -1,4 +1,4 @@
-package com.serasa.registerandscore.controller.exception.model;
+package com.serasa.registerandscore.core.exception.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

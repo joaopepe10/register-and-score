@@ -1,4 +1,4 @@
-package com.serasa.registerandscore.controller.exception;
+package com.serasa.registerandscore.core.exception;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

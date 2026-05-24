@@ -1,4 +1,4 @@
-package com.serasa.registerandscore.infra.persistence.sql.model;
+package com.serasa.registerandscore.infra.persistence.sql.person.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -37,6 +37,7 @@ public class PersonEntity {
     @Column(name = "active", nullable = false)
     @Builder.Default
     private boolean active = true;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -64,4 +65,8 @@ public class PersonEntity {
     @CreationTimestamp
     private OffsetDateTime createdAt;
 
+
+    public boolean isNotActive() {
+        return !this.active;
+    }
 }

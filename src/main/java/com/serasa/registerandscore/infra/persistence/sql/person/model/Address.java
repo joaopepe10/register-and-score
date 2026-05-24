@@ -1,4 +1,4 @@
-package com.serasa.registerandscore.infra.persistence.sql.model;
+package com.serasa.registerandscore.infra.persistence.sql.person.model;
 
 
 import jakarta.persistence.Embeddable;
