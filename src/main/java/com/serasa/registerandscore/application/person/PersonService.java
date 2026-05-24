@@ -61,8 +61,8 @@ public class PersonService {
             minDate = LocalDate.now().minusYears(maxAge + 1).plusDays(1);
         }
 
-        var searchName = isBlank(name) ? name : null;
-        var searchZipCode = isBlank(zipCode) ? zipCode : null;
+        var searchName = isBlank(name) ? null : name;
+        var searchZipCode = isBlank(zipCode) ? null : zipCode;
 
         var result = personRepository.findPersonsByFilters(searchName, searchZipCode, minDate, maxDate, PageRequest.of(page, size));
         var content = result.getContent().stream().map(personMapper::toResponse).collect(Collectors.toList());

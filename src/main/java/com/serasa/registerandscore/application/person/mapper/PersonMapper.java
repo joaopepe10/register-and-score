@@ -9,6 +9,8 @@ import com.serasa.model.PersonResponse;
 @Mapper(componentModel = "spring")
 public interface PersonMapper {
 
+    @Mapping(target = "state", source = "stateAbbreviation")
+    @Mapping(target = "publicPlace", source = "street")
     Address toAddress(ViaCepResponse response);
 
     @Mapping(target = "age", expression = "java(java.time.Period.between(entity.getBirthDate(), java.time.LocalDate.now()).getYears())")
