@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 @Builder
 public record ErrorResponse(
         HttpStatus status,
-        ErrorCode code,
         String error,
         String detail
 ) {
