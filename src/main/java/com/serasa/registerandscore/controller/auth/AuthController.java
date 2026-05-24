@@ -3,32 +3,31 @@ package com.serasa.registerandscore.controller.auth;
 import com.serasa.api.AuthApi;
 import com.serasa.model.LoginRequest;
 import com.serasa.model.LoginResponse;
-import com.serasa.registerandscore.core.security.TokenService;
+import com.serasa.model.RegisterRequest;
+import com.serasa.registerandscore.application.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthController implements AuthApi {
 
-    private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
+    private final AuthService authService;
 
     @Override
     public ResponseEntity<LoginResponse> login(LoginRequest loginRequest) {
-        var authentication = authenticationManager.authenticate(getAuthentication(loginRequest));
-        var token = tokenService.generateToken(authentication);
+        var token = authService.buildToken(loginRequest);
         var response = LoginResponse.builder().token(token).build();
         return ResponseEntity.ok(response);
     }
 
-    @NonNull
-    private static UsernamePasswordAuthenticationToken getAuthentication(LoginRequest loginRequest) {
-        return new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+    @Override
+    public ResponseEntity<Void> register(RegisterRequest registerRequest) {
+        authService.register(registerRequest);
+        return ResponseEntity.status(CREATED).build();
     }
+
 }
