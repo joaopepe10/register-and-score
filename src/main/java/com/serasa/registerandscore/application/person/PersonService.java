@@ -5,10 +5,10 @@ import com.serasa.model.PagePersonResponse;
 import com.serasa.model.PersonResponse;
 import com.serasa.model.UpdatePersonRequest;
 import com.serasa.registerandscore.application.person.mapper.PersonMapper;
+import com.serasa.registerandscore.core.exception.FailedUpdateInactivePersonException;
 import com.serasa.registerandscore.infra.client.UserInformationProvider;
 import com.serasa.registerandscore.infra.persistence.sql.person.PersonRepository;
 import com.serasa.registerandscore.infra.persistence.sql.person.model.Address;
-import com.serasa.registerandscore.infra.persistence.sql.person.model.PersonEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -59,7 +59,7 @@ public class PersonService {
     public void updatePerson(UUID id, UpdatePersonRequest request) {
         var personEntity = personRepository.findById(id).orElseThrow(() -> new RuntimeException("Person not found"));
         if (personEntity.isNotActive()) {
-            throw new RuntimeException("Person not found");
+            throw new FailedUpdateInactivePersonException("Person is not active");
         }
 
         if (nonNull(request.getName())) {

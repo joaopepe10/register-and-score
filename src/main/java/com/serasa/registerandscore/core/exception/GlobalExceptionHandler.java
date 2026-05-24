@@ -36,4 +36,16 @@ public class GlobalExceptionHandler {
         log.error("HttpMessageNotReadableException", e);
         return ResponseEntity.status(error.status()).body(error);
     }
+
+    @ExceptionHandler(FailedUpdateInactivePersonException.class)
+    public ResponseEntity<ErrorResponse> handleException(FailedUpdateInactivePersonException e) {
+        var error = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .error("Failed to update inactive person")
+                .detail(e.getMessage())
+                .build();
+
+        log.error("FailedUpdateInactivePersonException", e);
+        return ResponseEntity.status(error.status()).body(error);
+    }
 }
