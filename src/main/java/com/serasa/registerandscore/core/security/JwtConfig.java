@@ -14,8 +14,6 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 public class JwtConfig {
 
-    private final String jwtSecret = "this-is-a-very-secret-key-that-must-be-at-least-256-bits-long!!";
-
     @Bean
     public JwtEncoder jwtEncoder() {
         var secretKey = buildSecretKey();
@@ -31,6 +29,8 @@ public class JwtConfig {
 
     @NonNull
     private SecretKeySpec buildSecretKey() {
-        return new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
+        var jwtSecret = "this-is-a-very-secret-key-that-must-be-at-least-256-bits-long!!";
+        var bytes = jwtSecret.getBytes();
+        return new SecretKeySpec(bytes, "HmacSHA256");
     }
 }
